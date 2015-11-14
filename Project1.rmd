@@ -1,4 +1,11 @@
 ---
+title: "Reproducible Research - Project 1"
+author: "James Hookham"
+date: "14 November 2015"
+output: html_document
+---
+
+---
 title: "Reproducible Research - 1st Assignment"
 author: "James Hookham"
 date: "14 November 2015"
