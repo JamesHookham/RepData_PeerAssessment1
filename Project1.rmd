@@ -5,13 +5,6 @@ date: "14 November 2015"
 output: html_document
 ---
 
----
-title: "Reproducible Research - 1st Assignment"
-author: "James Hookham"
-date: "14 November 2015"
-output: pdf_document
----
-
 # Loading and preprocessing the data
 
 ## Load the data
@@ -20,7 +13,7 @@ If not done so already, the data can be downloaded from the following URL, https
 
 Now we read in the data using the ```{r} read.csv``` command.
 
-```{r}
+```{r, echo = TRUE}
 data <- read.csv("C:/Users/admin/Desktop/activity.csv")
 ```
 
@@ -28,18 +21,18 @@ data <- read.csv("C:/Users/admin/Desktop/activity.csv")
 
 In order to make our data set more readable, we will convert all of our times to the POSIXct format and then convert the intervals into times in the day. We can do this using the ```transform``` function. We then conduct some basic exploratory analyses using the various summary functions:
 
-```{r}
+```{r,echo=TRUE}
 data <- transform(data, 
      datetime = strptime( paste(date,formatC(interval,width=4,flag="0")), "%Y-%m-%d %H%M"),
      daytime = strptime( paste("1970-01-01",formatC(interval,width=4,flag="0")), "%Y-%m-%d %H%M"))
 str(data)
 ```
 
-```{r}
+```{r, echo = TRUE}
 summary(data)
 ```
 
-```{r}
+```{r, echo = TRUE}
 head(data)
 ```
 
@@ -49,7 +42,7 @@ head(data)
 
 In order to sketch a histogram, we will use the ```ggplot2``` package and the following code:
 
-```{r}
+```{r, echo = TRUE}
 library(ggplot2)
 plot <- function( x ) {
     stepsaday <- aggregate( steps ~ date, data=x, FUN=sum)
@@ -67,7 +60,7 @@ stepsaday <- plot( data )
 
 The total number of steps can be calculated using:
 
-```{r}
+```{r, echo = TRUE}
 sum(stepsaday$steps)
 ```
 
@@ -75,13 +68,13 @@ sum(stepsaday$steps)
 
 The mean number of steps can be calculated using:
 
-```{r}
+```{r, echo = TRUE}
 mean(stepsaday$steps)
 ```
 
 and the median by: 
 
-```{r}
+```{r, echo = TRUE}
 median(stepsaday$steps)
 ```
 
@@ -91,7 +84,7 @@ median(stepsaday$steps)
 
 Again, we can use the ```ggplot2``` package to make a times series which plots the steps at a given time of day.
 
-```{r}
+```{r, echo = TRUE}
 library(ggplot2)
 library(scales)
 plotavg <- function( x ) {
@@ -110,7 +103,7 @@ avgsteps <- plotavg( data )
 
 From the above time series, we can see that the maximum should occur somewhere between 8-9am. Indeed:
 
-```{r}
+```{r, echo = TRUE}
 avgsteps[which.max(avgsteps$steps),]
 ```
 
@@ -120,7 +113,7 @@ avgsteps[which.max(avgsteps$steps),]
 
 To calculate this, we can make use of the ```is.na``` function:
 
-```{r}
+```{r, echo = TRUE}
 sum(is.na(data$steps))
 ```
 
@@ -132,7 +125,7 @@ In order to fill in all of the missing values, we could note that the mean value
 
 For this section, I have chosen to use the ```dplyr``` package which was introduced during the Getting and Cleaning Data course of the Data Science Specialisation:
 
-```{r}
+```{r, echo = TRUE}
 library(dplyr)
 completedata <- inner_join(data,avgsteps,by="daytime")
 missingvals <- is.na(completedata$steps.x)
@@ -147,19 +140,19 @@ completedata <- transform(completedata,
 
 Using the above code, our histogram is:
 
-```{r}
+```{r, echo = TRUE}
 completeplot <- plot( completedata )
 ```
 
 and the new mean and median can be foud using:
 
-```{r}
+```{r, echo = TRUE}
 mean(completeplot$steps)
 ```
 
 and
 
-```{r}
+```{r, echo = TRUE}
 median(completeplot$steps)
 ```
 
@@ -167,7 +160,7 @@ median(completeplot$steps)
 
 ## Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 
-```{r}
+```{r, echo = TRUE}
 weekenddata <- with(completedata, 
                 ifelse( weekdays(datetime) %in% c("Saturday","Sunday"),"weekend","weekday"))
 completedata$weekenddata <- factor(weekenddata)
@@ -178,7 +171,7 @@ steps.bywknd <- aggregate( steps ~ weekenddata + daytime, data=completedata,FUN 
 
 Using the following code, we can compare the number of steps taken on weekends and weekdays:
 
-```{r}
+```{r, echo = TRUE}
 library(ggplot2)
 library(scales)
 p <- ggplot(steps.bywknd,aes(x=daytime,y=steps))
