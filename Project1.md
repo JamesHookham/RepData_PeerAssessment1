@@ -13,7 +13,8 @@ If not done so already, the data can be downloaded from the following URL, https
 
 Now we read in the data using the ```{r} read.csv``` command.
 
-```{r, echo = TRUE}
+
+```r
 data <- read.csv("C:/Users/admin/Desktop/activity.csv")
 ```
 
@@ -21,19 +22,60 @@ data <- read.csv("C:/Users/admin/Desktop/activity.csv")
 
 In order to make our data set more readable, we will convert all of our times to the POSIXct format and then convert the intervals into times in the day. We can do this using the ```transform``` function. We then conduct some basic exploratory analyses using the various summary functions:
 
-```{r,echo=TRUE}
+
+```r
 data <- transform(data, 
      datetime = strptime( paste(date,formatC(interval,width=4,flag="0")), "%Y-%m-%d %H%M"),
      daytime = strptime( paste("1970-01-01",formatC(interval,width=4,flag="0")), "%Y-%m-%d %H%M"))
 str(data)
 ```
 
-```{r, echo = TRUE}
+```
+## 'data.frame':	17568 obs. of  5 variables:
+##  $ steps   : int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ date    : Factor w/ 61 levels "2012-10-01","2012-10-02",..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
+##  $ datetime: POSIXct, format: "2012-10-01 00:00:00" "2012-10-01 00:05:00" ...
+##  $ daytime : POSIXct, format: "1970-01-01 00:00:00" "1970-01-01 00:05:00" ...
+```
+
+
+```r
 summary(data)
 ```
 
-```{r, echo = TRUE}
+```
+##      steps                date          interval     
+##  Min.   :  0.00   2012-10-01:  288   Min.   :   0.0  
+##  1st Qu.:  0.00   2012-10-02:  288   1st Qu.: 588.8  
+##  Median :  0.00   2012-10-03:  288   Median :1177.5  
+##  Mean   : 37.38   2012-10-04:  288   Mean   :1177.5  
+##  3rd Qu.: 12.00   2012-10-05:  288   3rd Qu.:1766.2  
+##  Max.   :806.00   2012-10-06:  288   Max.   :2355.0  
+##  NA's   :2304     (Other)   :15840                   
+##     datetime                      daytime                   
+##  Min.   :2012-10-01 00:00:00   Min.   :1970-01-01 00:00:00  
+##  1st Qu.:2012-10-16 05:58:45   1st Qu.:1970-01-01 05:58:45  
+##  Median :2012-10-31 11:57:30   Median :1970-01-01 11:57:30  
+##  Mean   :2012-10-31 11:30:52   Mean   :1970-01-01 11:57:30  
+##  3rd Qu.:2012-11-15 17:56:15   3rd Qu.:1970-01-01 17:56:15  
+##  Max.   :2012-11-30 23:55:00   Max.   :1970-01-01 23:55:00  
+## 
+```
+
+
+```r
 head(data)
+```
+
+```
+##   steps       date interval            datetime             daytime
+## 1    NA 2012-10-01        0 2012-10-01 00:00:00 1970-01-01 00:00:00
+## 2    NA 2012-10-01        5 2012-10-01 00:05:00 1970-01-01 00:05:00
+## 3    NA 2012-10-01       10 2012-10-01 00:10:00 1970-01-01 00:10:00
+## 4    NA 2012-10-01       15 2012-10-01 00:15:00 1970-01-01 00:15:00
+## 5    NA 2012-10-01       20 2012-10-01 00:20:00 1970-01-01 00:20:00
+## 6    NA 2012-10-01       25 2012-10-01 00:25:00 1970-01-01 00:25:00
 ```
 
 # What is mean total number of steps taken per day?
@@ -42,7 +84,8 @@ head(data)
 
 In order to sketch a histogram, we will use the ```ggplot2``` package and the following code:
 
-```{r, echo = TRUE}
+
+```r
 library(ggplot2)
 plot <- function( x ) {
     stepsaday <- aggregate( steps ~ date, data=x, FUN=sum)
@@ -56,26 +99,43 @@ plot <- function( x ) {
 stepsaday <- plot( data )
 ```
 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
+
 ## Calculate the total number of steps taken per day
 
 The total number of steps can be calculated using:
 
-```{r, echo = TRUE}
+
+```r
 sum(stepsaday$steps)
+```
+
+```
+## [1] 570608
 ```
 
 ## Calculate and report the mean and median of the total number of steps taken per day
 
 The mean number of steps can be calculated using:
 
-```{r, echo = TRUE}
+
+```r
 mean(stepsaday$steps)
+```
+
+```
+## [1] 10766.19
 ```
 
 and the median by: 
 
-```{r, echo = TRUE}
+
+```r
 median(stepsaday$steps)
+```
+
+```
+## [1] 10765
 ```
 
 # What is the average daily data pattern?
@@ -84,7 +144,8 @@ median(stepsaday$steps)
 
 Again, we can use the ```ggplot2``` package to make a times series which plots the steps at a given time of day.
 
-```{r, echo = TRUE}
+
+```r
 library(ggplot2)
 library(scales)
 plotavg <- function( x ) {
@@ -99,12 +160,20 @@ plotavg <- function( x ) {
 avgsteps <- plotavg( data )
 ```
 
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png) 
+
 ## Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
 From the above time series, we can see that the maximum should occur somewhere between 8-9am. Indeed:
 
-```{r, echo = TRUE}
+
+```r
 avgsteps[which.max(avgsteps$steps),]
+```
+
+```
+##                 daytime    steps
+## 104 1970-01-01 08:35:00 206.1698
 ```
 
 # Inputting missing values
@@ -113,8 +182,13 @@ avgsteps[which.max(avgsteps$steps),]
 
 To calculate this, we can make use of the ```is.na``` function:
 
-```{r, echo = TRUE}
+
+```r
 sum(is.na(data$steps))
+```
+
+```
+## [1] 2304
 ```
 
 ## Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
@@ -125,7 +199,8 @@ In order to fill in all of the missing values, we could note that the mean value
 
 For this section, I have chosen to use the ```dplyr``` package which was introduced during the Getting and Cleaning Data course of the Data Science Specialisation:
 
-```{r, echo = TRUE}
+
+```r
 library(dplyr)
 completedata <- inner_join(data,avgsteps,by="daytime")
 missingvals <- is.na(completedata$steps.x)
@@ -140,27 +215,41 @@ completedata <- transform(completedata,
 
 Using the above code, our histogram is:
 
-```{r, echo = TRUE}
+
+```r
 completeplot <- plot( completedata )
 ```
 
+![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png) 
+
 and the new mean and median can be foud using:
 
-```{r, echo = TRUE}
+
+```r
 mean(completeplot$steps)
+```
+
+```
+## [1] 10766.19
 ```
 
 and
 
-```{r, echo = TRUE}
+
+```r
 median(completeplot$steps)
+```
+
+```
+## [1] 10766.19
 ```
 
 # Are there differences in data patterns between weekdays and weekends?
 
 ## Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 
-```{r, echo = TRUE}
+
+```r
 weekenddata <- with(completedata, 
                 ifelse( weekdays(datetime) %in% c("Saturday","Sunday"),"weekend","weekday"))
 completedata$weekenddata <- factor(weekenddata)
@@ -171,7 +260,8 @@ steps.bywknd <- aggregate( steps ~ weekenddata + daytime, data=completedata,FUN 
 
 Using the following code, we can compare the number of steps taken on weekends and weekdays:
 
-```{r, echo = TRUE}
+
+```r
 library(ggplot2)
 library(scales)
 p <- ggplot(steps.bywknd,aes(x=daytime,y=steps))
@@ -180,6 +270,8 @@ p <- p + scale_x_datetime(labels=date_format("%H:%M %p"))
 p <- p + labs(title="Average steps per interval")
 p
 ```
+
+![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-17-1.png) 
 
 The most notable differences between the two graphs are the larger spike around 9am on weekdays and the higher variability of steps taken during weekdays. 
 
